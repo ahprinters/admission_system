@@ -95,6 +95,7 @@ class ApplicationController
             $year_completed = $_POST['year_completed'] ?? '';
             $program = $_POST['program'] ?? '';
             $start_date = $_POST['start_date'] ?? '';
+            $start_date = $start_date . '-01'; // Make sure the day is set to the 1st of the month when only month precision is needed.
             
             // Basic validation
             $errors = [];
@@ -135,6 +136,34 @@ class ApplicationController
                 ]);
                 
                 $applicationId = $this->db->lastInsertId();
+                
+                // Handle photo upload
+                if (!empty($_FILES['photo']['name']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
+                    $uploadDir = __DIR__ . '/../../uploads/photos/';
+                    
+                    // Create directory if it doesn't exist
+                    if (!is_dir($uploadDir)) {
+                        mkdir($uploadDir, 0777, true);
+                    }
+                    
+                    $tmpName = $_FILES['photo']['tmp_name'];
+                    $fileName = $applicationId . '_' . uniqid() . '_' . basename($_FILES['photo']['name']);
+                    $filePath = $uploadDir . $fileName;
+                    
+                    if (move_uploaded_file($tmpName, $filePath)) {
+                        // Update the application with the photo path
+                        $photoStmt = $this->db->prepare("
+                            UPDATE applications 
+                            SET photo_path = :photo_path 
+                            WHERE id = :id
+                        ");
+                        
+                        $photoStmt->execute([
+                            ':id' => $applicationId,
+                            ':photo_path' => $filePath
+                        ]);
+                    }
+                }
                 
                 // Handle document uploads
                 if (!empty($_FILES['documents']['name'][0])) {

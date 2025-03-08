@@ -51,9 +51,18 @@
                     <input type="date" class="form-control" id="dob" name="dob">
                 </div>
                 
-                <div class="col-md-12 mb-3">
+                <div class="col-md-8 mb-3">
                     <label for="address" class="form-label">Address</label>
                     <textarea class="form-control" id="address" name="address" rows="3"></textarea>
+                </div>
+                
+                <div class="col-md-4 mb-3">
+                    <label for="photo" class="form-label">Student Photo</label>
+                    <input type="file" class="form-control" id="photo" name="photo" accept="image/*">
+                    <div class="form-text">Upload a recent passport-sized photo (JPG, PNG)</div>
+                    <div class="mt-2" id="photoPreview" style="display: none;">
+                        <img src="" alt="Photo preview" class="img-thumbnail" style="max-height: 150px;">
+                    </div>
                 </div>
             </div>
             
@@ -123,3 +132,24 @@
         </form>
     </div>
 </div>
+
+<script>
+// Add photo preview functionality
+document.getElementById('photo').addEventListener('change', function(e) {
+    const photoPreview = document.getElementById('photoPreview');
+    const previewImg = photoPreview.querySelector('img');
+    
+    if (this.files && this.files[0]) {
+        const reader = new FileReader();
+        
+        reader.onload = function(e) {
+            previewImg.src = e.target.result;
+            photoPreview.style.display = 'block';
+        }
+        
+        reader.readAsDataURL(this.files[0]);
+    } else {
+        photoPreview.style.display = 'none';
+    }
+});
+</script>
