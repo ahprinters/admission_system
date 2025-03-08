@@ -2,16 +2,16 @@
 
 namespace App\Controllers;
 
-use App\Dashboard\DatabaseConnection;
+use App\Database\DatabaseConnection;
 use PDO;
 
 class DashboardController
 {
     private $db;
 
-    public function __construct(DatabaseConnection $dbConnection)
+    public function __construct()
     {
-        $this->db = $dbConnection->getConnection();
+        $this->db = DatabaseConnection::getConnection();
     }
 
     public function index()
@@ -38,9 +38,6 @@ class DashboardController
         $recentApplications = $recentQuery->fetchAll();
         
         // Render the dashboard view with data
-        include __DIR__ . '/../views/templates/base.php';
-        
-        // Set variables for the view
         $title = 'Dashboard';
         $content = $this->renderView('dashboard', [
             'totalApplications' => $totalApplications,
@@ -49,8 +46,11 @@ class DashboardController
             'recentApplications' => $recentApplications
         ]);
         
-        // Include the view
-        include __DIR__ . '/../views/dashboard.php';
+        // Include the base template (this will display the content)
+        include __DIR__ . '/../views/templates/base.php';
+        
+        // Remove this line as it's redundant and will cause issues
+        // include __DIR__ . '/../views/dashboard.php';
     }
     
     private function renderView($view, $data = [])

@@ -2,6 +2,8 @@
 
 namespace App;
 
+use App\Database\DatabaseConnection;
+
 class Router
 {
     private $routes = [];
@@ -37,8 +39,8 @@ class Router
                 $controllerName = $route['controller'];
                 $actionName = $route['action'];
                 
-                // Create controller instance
-                $controller = new $controllerName(new \App\Dashboard\DatabaseConnection());
+                // Create controller instance - using the correct namespace
+                $controller = new $controllerName();
                 
                 // Call the action with parameters
                 call_user_func_array([$controller, $actionName], $params);
